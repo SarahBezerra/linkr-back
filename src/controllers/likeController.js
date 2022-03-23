@@ -12,19 +12,24 @@ export async function getLikes(req, res) {
 
     const likes = requestLikes.rows;
 
-    const postsIsLiked = await connection.query(
-      `SELECT * FROM likes WHERE "userId" = $1`,
+    const requestPostsIsLiked = await connection.query(
+      `SELECT "postId" FROM likes WHERE "userId" = $1`,
       [userId]
     );
+    console.log(requestPostsIsLiked.rows);
 
-    const userLikes = likes.map((post) => {
+    const postIsLiked = requestPostsIsLiked.rows;
+    postIsLiked.map((lalal) => console.log(lalal));
+    console.log(postIsLiked.includes({ postId: 1 }));
+
+    const userLikes = likes.map(({ countLikes, postId }) => {
       let liked = "";
-      if (post.postId.includes(postsIsLiked)) {
+      if (postIsLiked.includes({ id: postId })) {
         liked = true;
       } else {
         liked = false;
       }
-      return { post, liked };
+      return { countLikes, postId, liked };
     });
 
     res.status(200).send(userLikes);
