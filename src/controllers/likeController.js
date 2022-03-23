@@ -2,7 +2,7 @@ import { connection } from "../database.js";
 
 export async function getLikes(req, res) {
   // const {user} = res.locals; user virá dessa forma depois da rota login e exclui debaixo
-  const userId = 2;
+  const userId = 1;
 
   try {
     const requestLikes = await connection.query(
@@ -13,22 +13,18 @@ export async function getLikes(req, res) {
     const likes = requestLikes.rows;
 
     const requestPostsIsLiked = await connection.query(
-      `SELECT "postId" FROM likes WHERE "userId" = $1`,
+      `SELECT "postId" as id FROM likes WHERE "userId" = $1`,
       [userId]
     );
-    console.log(requestPostsIsLiked.rows);
 
     const postIsLiked = requestPostsIsLiked.rows;
-    postIsLiked.map((lalal) => console.log(lalal));
-    console.log(postIsLiked.includes({ postId: 1 }));
 
     const userLikes = likes.map(({ countLikes, postId }) => {
-      let liked = "";
-      if (postIsLiked.includes({ id: postId })) {
-        liked = true;
-      } else {
-        liked = false;
-      }
+      let liked = false;
+      postIsLiked.map((object) => {
+        object.id === postId ? (liked = true) : "";
+      });
+
       return { countLikes, postId, liked };
     });
 
