@@ -1,24 +1,24 @@
 {
   "name": "linkr-back",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "dev": "npx nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SarahBezerra/linkr-back.git"
   },
-  "keywords": [],
+  "keywords": [
+    "linkr",
+    "social",
+    "networking"
+  ],
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/SarahBezerra/linkr-back/issues"
-  },
-  "homepage": "https://github.com/SarahBezerra/linkr-back#readme",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
