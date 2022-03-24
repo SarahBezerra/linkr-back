@@ -27,3 +27,18 @@ export async function postSingUp(req,res){
         res.sendStatus(500);
     }
 }
+
+
+export async function postSingIn(req,res){
+
+    const { email, password } = req.body;
+
+    try {
+
+        res.sendStatus(200);
+
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+}
