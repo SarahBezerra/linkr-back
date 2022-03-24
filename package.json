@@ -20,6 +20,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
@@ -29,5 +30,9 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/SarahBezerra/linkr-back/issues"
+  },
+  "homepage": "https://github.com/SarahBezerra/linkr-back#readme"
 }
