@@ -46,7 +46,7 @@ export async function postSingIn(req,res){
 
             await authRepository.createSession(user.rows[0].id, token);
     
-            res.send({token});
+            res.send(token);
             
         } else {
             return res.sendStatus(400);
