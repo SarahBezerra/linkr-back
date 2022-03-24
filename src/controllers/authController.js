@@ -10,7 +10,7 @@ export async function postSingUp(req,res){
 
         const user = await authRepository.getUserByEmail( email );
         if(user.rowCount !== 0){
-            return res.status(400).send("E-mail já casdastrado");
+            return res.sendStatus(400);
         }
 
         const encriptedPassword = bcrypt.hashSync(password, 10);
@@ -33,13 +33,12 @@ export async function postSingUp(req,res){
 export async function postSingIn(req,res){
 
     const { email, password } = req.body;
-    const errorMessage = "E-mail ou senha incorretos";
 
     try {
 
         const user = await authRepository.getUserByEmail( email );
         if(user.rowCount === 0){
-            return res.send(errorMessage).status(400);
+            return res.sendStatus(400);
         }
 
         if(bcrypt.compareSync(password, user.rows[0].password)) {
@@ -50,7 +49,7 @@ export async function postSingIn(req,res){
             res.send({token});
             
         } else {
-            return res.send(errorMessage).status(400);
+            return res.sendStatus(400);
         }
 
     } catch (err) {
