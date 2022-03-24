@@ -1,7 +1,3 @@
 /node_modules
-<<<<<<< HEAD
-.env
-=======
 .env
 .sql
->>>>>>> 7eeca73fa6f6bc57d94be48fcaf48b5c59609bd6
