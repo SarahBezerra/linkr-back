@@ -1,6 +1,6 @@
 import { connection } from "../database.js";
 
-async function getUsers(email){
+async function getUserByEmail(email){
     return connection.query(`
         SELECT * 
         FROM users 
@@ -22,8 +22,16 @@ async function createPublicContent(userId, username, image_url){
     `, [userId, username, image_url]);
 }
 
+async function createSession(userId, token){
+    return connection.query(`
+        INSERT INTO sessions ("userId", token) 
+        VALUES ($1, $2)
+    `, [userId, token]);
+}
+
 export const authRepository = {
-    getUsers,
+    getUserByEmail,
     createUser,
-    createPublicContent
+    createPublicContent,
+    createSession
 }
