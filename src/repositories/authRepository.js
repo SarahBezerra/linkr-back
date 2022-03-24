@@ -29,9 +29,27 @@ async function createSession(userId, token){
     `, [userId, token]);
 }
 
+async function getSession(token){
+    return connection.query(`
+        SELECT * 
+        FROM sessions 
+        WHERE token=$1
+    `, [token]);
+}
+
+async function getPublicContent(userId){
+    return connection.query(`
+        SELECT * 
+        FROM public_contents 
+        WHERE "userId"=$1
+    `, [userId]);
+}
+
 export const authRepository = {
     getUserByEmail,
     createUser,
     createPublicContent,
-    createSession
+    createSession,
+    getSession,
+    getPublicContent
 }
