@@ -1,35 +1,44 @@
 import { connection } from "../database.js";
+import { likeRepository } from "../repositories/likeRepository.js";
 
 export async function getLikes(req, res) {
   // const {user} = res.locals; user virá dessa forma depois da rota login e exclui debaixo
-  const userId = 2;
+  const theUser = 1;
 
   try {
-    const requestLikes = await connection.query(
-      `SELECT COUNT("userId") AS "countLikes", "postId"  
-        FROM likes GROUP BY "postId"`
-    );
+    const requestLikes = await likeRepository.countLikesPosts();
 
     const likes = requestLikes.rows;
 
-    const requestPostsIsLiked = await connection.query(
-      `SELECT "postId" FROM likes WHERE "userId" = $1`,
-      [userId]
-    );
-    console.log(requestPostsIsLiked.rows);
+    const requestPostsIsLiked = await likeRepository.theUserLiked(theUser);
 
     const postIsLiked = requestPostsIsLiked.rows;
-    postIsLiked.map((lalal) => console.log(lalal));
-    console.log(postIsLiked.includes({ postId: 1 }));
+
+    const requestUsersNames = await likeRepository.namesLikesPosts();
+
+    const userNames = requestUsersNames.rows;
 
     const userLikes = likes.map(({ countLikes, postId }) => {
-      let liked = "";
-      if (postIsLiked.includes({ id: postId })) {
-        liked = true;
-      } else {
-        liked = false;
-      }
-      return { countLikes, postId, liked };
+      let liked = false;
+      postIsLiked.map(({ id }) => {
+        id === postId ? (liked = true) : "";
+      });
+
+      const arrayUsersNames = [];
+
+      userNames.map(({ id, userId, username }) => {
+        if (id === postId && userId === theUser)
+          return arrayUsersNames.unshift("Você");
+        if (id === postId && arrayUsersNames.length < 3)
+          return arrayUsersNames.push(username);
+      });
+
+      const othersPeoples = countLikes - arrayUsersNames.length;
+      othersPeoples !== 0
+        ? arrayUsersNames.push(`and others ${othersPeoples} peoples`)
+        : "";
+
+      return { countLikes, postId, liked, arrayUsersNames };
     });
 
     res.status(200).send(userLikes);
@@ -45,32 +54,20 @@ export async function likePostOrNot(req, res) {
   const { idPost } = req.params;
 
   try {
-    const postExist = await connection.query(
-      `SELECT * FROM posts WHERE id = $1`,
-      [idPost]
-    );
+    const postExist = await likeRepository.verifyPostExist(idPost);
 
     if (!(postExist.rowCount > 0)) {
       return res.sendStatus(404);
     }
 
-    const postIsLike = await connection.query(
-      `SELECT * FROM likes WHERE "postId" = $1 AND "userId" = $2`,
-      [idPost, userId]
-    );
+    const postIsLike = await likeRepository.verifyPostLiked(idPost, userId);
 
     if (postIsLike.rowCount > 0) {
-      await connection.query(
-        `DELETE FROM likes WHERE "postId" = $1 AND "userId" = $2`,
-        [idPost, userId]
-      );
+      await likeRepository.deleteLike(idPost, userId);
       return res.sendStatus(200);
     }
 
-    await connection.query(
-      `INSERT INTO likes ("postId", "userId") VALUES ($1, $2)`,
-      [idPost, userId]
-    );
+    await likeRepository.insertLike(idPost, userId);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
