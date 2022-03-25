@@ -1,14 +1,11 @@
 import { Router } from "express";
-import { getPosts } from "../controllers/postController.js";
-
+import { deletePost, getPosts } from "../controllers/postController.js";
 
 const postRouter = Router();
 
-
-
 //validateTokenMiddleware
 
-postRouter.get('/posts', getPosts);
-
+postRouter.get("/posts", getPosts);
+postRouter.delete("/posts/:id", deletePost);
 
 export default postRouter;

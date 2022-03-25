@@ -34,3 +34,13 @@ export async function getPosts(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function deletePost(req, res) {
+  const { id } = req.params;
+
+  try {
+  } catch (err) {
+    //console.log(err);
+    res.sendStatus(500);
+  }
+}
