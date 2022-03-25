@@ -12,7 +12,7 @@ export async function getPosts(req,res){
         for (const r of result.rows) {
 
             const meta = await urlMetadata(r.url);            
-            console.log(meta);
+            // console.log(meta);
         
             const postObject = {
                 id: r.id,
