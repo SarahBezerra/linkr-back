@@ -1,5 +1,6 @@
 import { postRepository } from "../repositories/postRepository.js";
 import urlMetadata from "url-metadata";
+import { connection } from "../database.js";
 
 export async function getPosts(req, res) {
   try {
@@ -9,7 +10,6 @@ export async function getPosts(req, res) {
 
     for (const r of result.rows) {
       const meta = await urlMetadata(r.url);
-      console.log(meta);
 
       const postObject = {
         id: r.id,
@@ -50,9 +50,21 @@ export async function sendPost(req, res) {
 }
 
 export async function deletePost(req, res) {
-  const { id } = req.params;
+  const { user } = res.locals;
+  const { idPost } = req.params;
 
   try {
+    const postExist = await connection.query(
+      `SELECT * FROM posts WHERE id = $1 AND "userId" = $2`,
+      [idPost, user.id]
+    );
+
+    if (!(postExist.rowCount > 0)) {
+      return res.sendStatus(400);
+    }
+
+    await connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
+    res.sendStatus(200);
   } catch (err) {
     //console.log(err);
     res.sendStatus(500);
