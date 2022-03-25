@@ -2,7 +2,7 @@ import joi from "joi";
 
 const postSchema = joi.object({
 
-  url: joi.uri().required(),
+  url: joi.string().uri().required(),
   text: joi.string().optional(),
 });
 
