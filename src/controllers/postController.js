@@ -54,16 +54,13 @@ export async function deletePost(req, res) {
   const { idPost } = req.params;
 
   try {
-    const postExist = await connection.query(
-      `SELECT * FROM posts WHERE id = $1 AND "userId" = $2`,
-      [idPost, user.id]
-    );
+    const postExist = await postRepository.verifyAuthPost(idPost, user.id);
 
     if (!(postExist.rowCount > 0)) {
       return res.sendStatus(400);
     }
 
-    await connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
+    await postRepository.deletePostId(idPost);
     res.sendStatus(200);
   } catch (err) {
     //console.log(err);

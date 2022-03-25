@@ -1,7 +1,7 @@
 import { connection } from "../database.js";
 
-async function getPosts(){
-    return connection.query(`
+async function getPosts() {
+  return connection.query(`
         SELECT po.*, pu.username, pu."image_url" 
         FROM posts po
         JOIN public_contents pu ON po."userId"=pu."userId"
@@ -10,62 +10,83 @@ async function getPosts(){
     `);
 }
 
-
-async function sendPost(id, url, text){
-
-    
-    return connection.query(`
+async function sendPost(id, url, text) {
+  return connection.query(`
         INSERT INTO posts
 `);
-
 }
 
-async function storeHashtags(id, text){
+async function storeHashtags(id, text) {
+  try {
+    const hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
 
-    try{
-        const hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
+    const hashtagArray = hashtags.reduce((prev, curr) => {
+      let [junk, hashtag] = curr.split("#");
+      prev.push(hashtag);
+      return prev;
+    }, []);
 
-        const hashtagArray = hashtags.reduce((prev, curr) => {
-            let [junk, hashtag] =  curr.split('#');
-            prev.push(hashtag);
-            return prev
-        },[])
+    for (let i = 0; i < hashtagArray.length; i++) {
+      let newId = 0;
 
-        for(let i=0; i<hashtagArray.length; i++){
-            let newId=0;
-
-            const {rows: [hashtagObject]} = await connection.query('SELECT * FROM hashtags WHERE hashtags.name = $1',[hashtagArray[i]])
-            if(hashtagObject){
-                await connection.query('INSERT INTO "hashtagsPosts" ("postId","hashtagId") VALUES ($1, $2) ',[id, hashtagObject.id])
-            }
-            else{
-                const {rows: [{id: newHashtagId}]} = await connection.query('INSERT INTO hashtags (name) VALUES ($1) RETURNING id',[hashtagArray[i]]);
-                await connection.query('INSERT INTO "hashtagsPosts" ("postId","hashtagId") VALUES ($1, $2) ',[id, newHashtagId])
-                
-            }
-        }
-
+      const {
+        rows: [hashtagObject],
+      } = await connection.query(
+        "SELECT * FROM hashtags WHERE hashtags.name = $1",
+        [hashtagArray[i]]
+      );
+      if (hashtagObject) {
+        await connection.query(
+          'INSERT INTO "hashtagsPosts" ("postId","hashtagId") VALUES ($1, $2) ',
+          [id, hashtagObject.id]
+        );
+      } else {
+        const {
+          rows: [{ id: newHashtagId }],
+        } = await connection.query(
+          "INSERT INTO hashtags (name) VALUES ($1) RETURNING id",
+          [hashtagArray[i]]
+        );
+        await connection.query(
+          'INSERT INTO "hashtagsPosts" ("postId","hashtagId") VALUES ($1, $2) ',
+          [id, newHashtagId]
+        );
+      }
     }
-    catch(error){
-        console.log(error);
-    }
-    
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-async function storePost(id, url, text){
+async function storePost(id, url, text) {
+  try {
+    const {
+      rows: [{ id: newPostId }],
+    } = await connection.query(
+      'INSERT INTO posts ("userId", url, text) VALUES ($1, $2, $3) RETURNING id',
+      [id, url, text]
+    );
+    return newPostId;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-    try{
-        const {rows: [{id: newPostId}]} = await connection.query('INSERT INTO posts ("userId", url, text) VALUES ($1, $2, $3) RETURNING id',[id, url, text]);
-        return newPostId;
-    }
-    catch(error){
-        console.log(error);
-    }
+async function verifyAuthPost(idPost, idUser) {
+  return connection.query(
+    ` SELECT * FROM posts WHERE id = $1 AND "userId" = $2`,
+    [idPost, idUser]
+  );
+}
+
+async function deletePostId(idPost) {
+  return connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
 }
 
 export const postRepository = {
-    getPosts,
-    storePost,
-    storeHashtags
-
-}
+  getPosts,
+  storePost,
+  storeHashtags,
+  verifyAuthPost,
+  deletePostId,
+};
