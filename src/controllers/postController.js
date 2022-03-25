@@ -2,6 +2,7 @@ import { postRepository } from "../repositories/postRepository.js";
 import urlMetadata from "url-metadata";
 
 
+
 export async function getPosts(req,res){
     try {
         const result = await postRepository.getPosts();
@@ -55,3 +56,4 @@ export async function sendPost(req, res){
     }
 
 }
+

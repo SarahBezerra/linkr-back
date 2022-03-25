@@ -6,4 +6,5 @@ const postSchema = joi.object({
   text: joi.string().optional(),
 });
 
+
 export default postSchema;

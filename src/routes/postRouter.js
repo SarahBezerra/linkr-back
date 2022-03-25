@@ -3,8 +3,9 @@ import validateSchemaMiddleware from "../middlewares/validateSchemaMiddleware.js
 import postSchema from "../schemas/postSchema.js";
 import { getPosts, sendPost } from "../controllers/postController.js";
 
-const postRouter = Router();
 
+
+const postRouter = Router();
 
 
 postRouter.post('/posts', validateSchemaMiddleware(postSchema), sendPost)

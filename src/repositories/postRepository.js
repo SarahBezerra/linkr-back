@@ -10,6 +10,7 @@ async function getPosts(){
     `);
 }
 
+
 async function sendPost(id, url, text){
 
     
@@ -66,4 +67,5 @@ export const postRepository = {
     getPosts,
     storePost,
     storeHashtags
+
 }
