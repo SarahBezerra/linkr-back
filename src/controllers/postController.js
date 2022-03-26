@@ -42,11 +42,10 @@ export async function getPosts(req,res){
 
 
 export async function sendPost(req, res){
-
-    const userId=3;
+    const {user: {rows: [user]}} = res.locals
     const {url, text} = req.body;
     try{
-        const postId = await postRepository.storePost(userId, url, text);
+        const postId = await postRepository.storePost(user.userId, url, text);
         await postRepository.storeHashtags(postId, text);
 
         res.sendStatus(200);

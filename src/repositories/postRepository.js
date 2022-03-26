@@ -11,14 +11,7 @@ async function getPosts(){
 }
 
 
-async function sendPost(id, url, text){
 
-    
-    return connection.query(`
-        INSERT INTO posts
-`);
-
-}
 
 async function storeHashtags(id, text){
 
