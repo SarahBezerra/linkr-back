@@ -1,13 +1,23 @@
 import { connection } from "../database.js";
 
-async function getPosts(){
+async function getPosts(conditions = [], params = []){
+
+    let query = '';
+
+    if (conditions.length > 0){
+        query += `WHERE ${conditions.join(" AND ")}`;
+    }
+
     return connection.query(`
         SELECT po.*, pu.username, pu."image_url" 
         FROM posts po
-        JOIN public_contents pu ON po."userId"=pu."userId"
+        JOIN public_contents pu ON pu."userId" = po."userId"
+
+        ${query}
+
         ORDER BY po.post_date DESC
         LIMIT 20
-    `);
+    `, params);
 }
 
 

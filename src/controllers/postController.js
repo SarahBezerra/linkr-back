@@ -4,8 +4,12 @@ import urlMetadata from "url-metadata";
 
 
 export async function getPosts(req,res){
+
+    const { conditions } = res.locals;
+    const { params } = res.locals;
+
     try {
-        const result = await postRepository.getPosts();
+        const result = await postRepository.getPosts(conditions, params);
 
         const postsList = [];
 
@@ -55,4 +59,3 @@ export async function sendPost(req, res){
     }
 
 }
-
