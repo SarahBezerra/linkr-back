@@ -8,6 +8,7 @@ export async function getPosts(req, res) {
 
   try {
     const result = await postRepository.getPosts(conditions, params);
+    console.log(result.rows);
 
     const postsList = [];
 
@@ -41,10 +42,10 @@ export async function getPosts(req, res) {
 }
 
 export async function sendPost(req, res) {
-  const userId = 3;
+  const { user } = res.locals;
   const { url, text } = req.body;
   try {
-    const postId = await postRepository.storePost(userId, url, text);
+    const postId = await postRepository.storePost(user.userId, url, text);
     await postRepository.storeHashtags(postId, text);
 
     res.sendStatus(200);
@@ -58,14 +59,16 @@ export async function deletePost(req, res) {
   const { idPost } = req.params;
 
   try {
-    const postExist = await postRepository.verifyAuthPost(idPost, user.id);
+    const postExist = await postRepository.verifyAuthPost(idPost, user.userId);
+    console.log(postExist.rows);
 
     if (!(postExist.rowCount > 0)) return res.sendStatus(400);
 
+    await postRepository.deleteHashtagsPost(idPost);
     await postRepository.deletePostId(idPost);
     res.sendStatus(200);
   } catch (err) {
-    //console.log(err);
+    console.log(err);
     res.sendStatus(500);
   }
 }

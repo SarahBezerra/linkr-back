@@ -91,6 +91,12 @@ async function verifyAuthPost(idPost, idUser) {
   );
 }
 
+async function deleteHashtagsPost(idPost) {
+  return connection.query(`DELETE FROM "hashtagsPosts" WHERE "postId" = $1`, [
+    idPost,
+  ]);
+}
+
 async function deletePostId(idPost) {
   return connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
 }
@@ -101,4 +107,5 @@ export const postRepository = {
   storeHashtags,
   verifyAuthPost,
   deletePostId,
+  deleteHashtagsPost,
 };

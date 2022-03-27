@@ -47,9 +47,9 @@ export async function postSingIn(req, res) {
         rows: [publicContentObject],
       } = await authRepository.getPublicContent(user.rows[0].id);
 
-      const { image_url, username } = publicContentObject;
+      const { image_url, userId, username } = publicContentObject;
 
-      res.send({ token, image_url, username });
+      res.send({ token, userId, image_url, username });
     } else {
       return res.sendStatus(400);
     }
