@@ -9,33 +9,35 @@ export async function getPosts(req, res) {
   try {
     const result = await postRepository.getPosts(conditions, params);
 
-    const meta = await urlMetadata(r.url);
-    // console.log(meta);
+    const postsList = [];
 
-    const postObject = {
-      id: r.id,
-      userId: r.userId,
-      username: r.username,
-      text: r.text,
-      image_url: r.image_url,
+    for (const r of result.rows) {
+      const meta = await urlMetadata(r.url);
+      // console.log(meta);
 
-      metaData: {
-        url: meta.url,
-        title: meta.title,
-        image: meta.image,
-        description: meta.description,
-      },
-    };
+      const postObject = {
+        id: r.id,
+        userId: r.userId,
+        username: r.username,
+        text: r.text,
+        image_url: r.image_url,
 
-    postsList.push(postObject);
+        metaData: {
+          url: meta.url,
+          title: meta.title,
+          image: meta.image,
+          description: meta.description,
+        },
+      };
+
+      postsList.push(postObject);
+    }
 
     res.send(postsList);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
-
-  res.send(postsList);
 }
 
 export async function sendPost(req, res) {

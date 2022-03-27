@@ -2,7 +2,7 @@ import { likeRepository } from "../repositories/likeRepository.js";
 
 export async function getLikes(req, res) {
   const { user } = res.locals;
-  const theUser = user.id;
+  const theUser = user.userId;
 
   try {
     const requestLikes = await likeRepository.countLikesPosts();
@@ -24,15 +24,14 @@ export async function getLikes(req, res) {
       });
 
       const arrayUsersNames = [];
-
       userNames.map(({ id, userId, username }) => {
-        if (id === postId && userId === `${theUser}`) {
-          arrayUsersNames.unshift("Você");
-        }
-        if (id === postId && arrayUsersNames.length < 3) {
-          arrayUsersNames.push(username);
-        }
+        if (id === postId && userId === theUser)
+          return arrayUsersNames.unshift("Você");
+        if (id === postId && arrayUsersNames.length < 3)
+          return arrayUsersNames.push(username);
       });
+
+      if (arrayUsersNames.length > 2) arrayUsersNames.pop();
 
       const othersPeoples = countLikes - arrayUsersNames.length;
       othersPeoples !== 0
@@ -52,7 +51,7 @@ export async function getLikes(req, res) {
 export async function likePostOrNot(req, res) {
   const { idPost } = req.params;
   const { user } = res.locals;
-  const userId = user.id;
+  const userId = user.userId;
 
   try {
     const postExist = await likeRepository.verifyPostExist(idPost);
