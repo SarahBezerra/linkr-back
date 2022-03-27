@@ -8,7 +8,6 @@ export async function getPosts(req, res) {
 
   try {
     const result = await postRepository.getPosts(conditions, params);
-    console.log(result.rows);
 
     const postsList = [];
 
@@ -63,6 +62,7 @@ export async function deletePost(req, res) {
 
     if (!(postExist.rowCount > 0)) return res.sendStatus(400);
 
+    await postRepository.deleteLikesPost(idPost);
     await postRepository.deleteHashtagsPost(idPost);
     await postRepository.deletePostId(idPost);
     res.sendStatus(200);
