@@ -9,21 +9,6 @@ export async function getPosts(req, res) {
   try {
     const result = await postRepository.getPosts(conditions, params);
 
-    const postObject = {
-      id: r.id,
-      userId: r.userId,
-      username: r.username,
-      text: r.text,
-      image_url: r.image_url,
-
-      metaData: {
-        url: meta.url,
-        title: meta.title,
-        image: meta.image,
-        description: meta.description,
-      },
-    };
-
     const meta = await urlMetadata(r.url);
     // console.log(meta);
 
