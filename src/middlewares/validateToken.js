@@ -3,7 +3,7 @@ import { authRepository } from "../repositories/authRepository.js";
 export async function validateToken(req, res, next) {
   const authorization = req.headers.authorization;
   const errorMessage = "Faça login/cadastro para continuar";
-  
+
   const token = authorization?.replace("Bearer ", "");
   
   if (!token) {
@@ -19,9 +19,8 @@ export async function validateToken(req, res, next) {
   if (user.rowCount === 0) {
     return res.status(401).send(errorMessage);
   }
-  
-  res.locals.user = user;
-  //res.locals.user = {name: 'eu'};
-  
+
+  res.locals.user = user.rows[0];
+
   next();
 }
