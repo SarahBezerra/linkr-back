@@ -7,9 +7,9 @@ import hashtagRouter from "./hashtagRoute.js";
 
 
 const router = Router();
-router.use(postRouter);
-router.use(likeRouter);
 router.use(authRouter);
+router.use(likeRouter);
+router.use(postRouter);
 router.use(hashtagRouter);
 
 export default router;

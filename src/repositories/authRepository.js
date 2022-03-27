@@ -23,6 +23,12 @@ async function createPublicContent(userId, username, image_url){
 }
 
 async function createSession(userId, token){
+
+    // connection.query(`
+    //     DELETE from sessions
+    //     where "userId"=$1
+    // `, [userId]);
+
     return connection.query(`
         INSERT INTO sessions ("userId", token) 
         VALUES ($1, $2)
