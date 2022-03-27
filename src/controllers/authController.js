@@ -3,7 +3,9 @@ import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 export async function postSingUp(req, res) {
-  const { email, password, username, image_url } = req.body;
+  const { email, password, image_url } = req.body;
+  let { username } = req.body;
+  username = username[0].toUpperCase() + username.slice(1);
 
   try {
     const user = await authRepository.getUserByEmail(email);
@@ -17,11 +19,7 @@ export async function postSingUp(req, res) {
 
     const registeredUser = await authRepository.getUserByEmail(email);
     const userId = registeredUser.rows[0].id;
-    await authRepository.createPublicContent(
-      userId,
-      username.toUpperCase(),
-      image_url
-    );
+    await authRepository.createPublicContent(userId, username, image_url);
 
     res.sendStatus(201);
   } catch (err) {
