@@ -60,7 +60,6 @@ export async function deletePost(req, res) {
 
   try {
     const postExist = await postRepository.verifyAuthPost(idPost, user.userId);
-    console.log(postExist.rows);
 
     if (!(postExist.rowCount > 0)) return res.sendStatus(400);
 
