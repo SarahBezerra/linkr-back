@@ -3,37 +3,54 @@ import urlMetadata from "url-metadata";
 import { connection } from "../database.js";
 
 export async function getPosts(req, res) {
+  const { conditions } = res.locals;
+  const { params } = res.locals;
+
   try {
-    const result = await postRepository.getPosts();
+    const result = await postRepository.getPosts(conditions, params);
 
-    const postsList = [];
+    const postObject = {
+      id: r.id,
+      userId: r.userId,
+      username: r.username,
+      text: r.text,
+      image_url: r.image_url,
 
-    for (const r of result.rows) {
-      const meta = await urlMetadata(r.url);
+      metaData: {
+        url: meta.url,
+        title: meta.title,
+        image: meta.image,
+        description: meta.description,
+      },
+    };
 
-      const postObject = {
-        id: r.id,
-        userId: r.userId,
-        username: r.username,
-        text: r.text,
-        image_url: r.image_url,
+    const meta = await urlMetadata(r.url);
+    // console.log(meta);
 
-        metaData: {
-          url: meta.url,
-          title: meta.title,
-          image: meta.image,
-          description: meta.description,
-        },
-      };
+    const postObject = {
+      id: r.id,
+      userId: r.userId,
+      username: r.username,
+      text: r.text,
+      image_url: r.image_url,
 
-      postsList.push(postObject);
-    }
+      metaData: {
+        url: meta.url,
+        title: meta.title,
+        image: meta.image,
+        description: meta.description,
+      },
+    };
+
+    postsList.push(postObject);
 
     res.send(postsList);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
+
+  res.send(postsList);
 }
 
 export async function sendPost(req, res) {
@@ -56,9 +73,7 @@ export async function deletePost(req, res) {
   try {
     const postExist = await postRepository.verifyAuthPost(idPost, user.id);
 
-    if (!(postExist.rowCount > 0)) {
-      return res.sendStatus(400);
-    }
+    if (!(postExist.rowCount > 0)) return res.sendStatus(400);
 
     await postRepository.deletePostId(idPost);
     res.sendStatus(200);
