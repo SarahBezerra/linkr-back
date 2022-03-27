@@ -6,7 +6,6 @@ export async function postSingUp(req, res) {
   const { email, password, image_url } = req.body;
   let { username } = req.body;
   username = username[0].toUpperCase() + username.slice(1);
-  console.log(username);
 
   try {
     const user = await authRepository.getUserByEmail(email);

@@ -10,9 +10,10 @@ export async function getPosts(req, res) {
     const result = await postRepository.getPosts(conditions, params);
 
     const postsList = [];
+    console.log(result.rows);
 
     for (const r of result.rows) {
-      const meta = await urlMetadata(r.url);
+      // const meta = await urlMetadata(r.url);
       // console.log(meta);
 
       const postObject = {
@@ -23,10 +24,10 @@ export async function getPosts(req, res) {
         image_url: r.image_url,
 
         metaData: {
-          url: meta.url,
-          title: meta.title,
-          image: meta.image,
-          description: meta.description,
+          url: r.url,
+          title: r.title,
+          image: r.image,
+          description: r.description,
         },
       };
 
@@ -44,8 +45,11 @@ export async function sendPost(req, res) {
   const { user } = res.locals;
   const { url, text } = req.body;
   try {
+    const meta = await urlMetadata(url);
+
     const postId = await postRepository.storePost(user.userId, url, text);
     await postRepository.storeHashtags(postId, text);
+    await postRepository.storeMetadata(postId, meta);
 
     res.sendStatus(200);
   } catch (error) {
@@ -64,6 +68,7 @@ export async function deletePost(req, res) {
 
     await postRepository.deleteLikesPost(idPost);
     await postRepository.deleteHashtagsPost(idPost);
+    await postRepository.deleteMetadataPost(idPost);
     await postRepository.deletePostId(idPost);
     res.sendStatus(200);
   } catch (err) {

@@ -9,9 +9,11 @@ async function getPosts(conditions = [], params = []) {
 
   return connection.query(
     `
-        SELECT po.*, pu.username, pu."image_url" 
+        SELECT po.*, pu.username, pu."image_url",
+          me.title, me.image, me.description
         FROM posts po
         JOIN public_contents pu ON po."userId"=pu."userId"
+        JOIN metadata me ON po.id = me."postId"
 
         ${query}
 
@@ -70,6 +72,16 @@ async function storeHashtags(id, text) {
   }
 }
 
+async function storeMetadata(postId, meta) {
+  return connection.query(
+    `
+    INSERT INTO metadata ("postId", image, title, description)
+    VALUES ($1, $2, $3, $4)
+  `,
+    [postId, meta.image, meta.title, meta.description]
+  );
+}
+
 async function storePost(id, url, text) {
   try {
     const {
@@ -101,6 +113,10 @@ async function deleteHashtagsPost(idPost) {
   ]);
 }
 
+async function deleteMetadataPost(idPost) {
+  return connection.query(`DELETE FROM metadata WHERE "postId" = $1`, [idPost]);
+}
+
 async function deletePostId(idPost) {
   return connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
 }
@@ -109,8 +125,10 @@ export const postRepository = {
   getPosts,
   storePost,
   storeHashtags,
+  storeMetadata,
   verifyAuthPost,
   deleteLikesPost,
   deletePostId,
+  deleteMetadataPost,
   deleteHashtagsPost,
 };
