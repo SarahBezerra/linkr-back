@@ -5,16 +5,10 @@ import likeRouter from "./likeRouter.js";
 import hashtagRouter from "./hashtagRoute.js";
 import browserRouter from "./browserRouter.js";
 
-
 const router = Router();
 
 router.use(browserRouter);
 router.use(authRouter);
-<<<<<<< HEAD
-=======
-router.use(browserRouter);
-router.use(likeRouter);
->>>>>>> main
 router.use(postRouter);
 router.use(likeRouter);
 router.use(hashtagRouter);
