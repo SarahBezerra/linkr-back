@@ -1,4 +1,3 @@
-import { connection } from "../database.js";
 import { likeRepository } from "../repositories/likeRepository.js";
 
 export async function getLikes(req, res) {

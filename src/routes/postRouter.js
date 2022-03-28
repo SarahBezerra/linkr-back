@@ -11,7 +11,9 @@ const postRouter = Router();
 
 
 postRouter.post('/posts', validateSchemaMiddleware(postSchema), validateToken, sendPost);
+postRouter.get('/posts', getPosts);
 postRouter.get('/posts/:id', filterPostMiddleware, getPosts);
+
 
 
 export default postRouter;
