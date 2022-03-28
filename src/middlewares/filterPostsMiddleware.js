@@ -15,7 +15,7 @@ export default function filterPostMiddleware(req, res, next){
 
     if(id){
         params.push(id);
-        conditions.push(`"userId"=$${params.length}`);
+        conditions.push(`pu."userId"=$${params.length}`);
     }
 
 
