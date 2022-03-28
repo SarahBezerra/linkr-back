@@ -11,6 +11,7 @@ postRouter.use(validateToken);
 
 postRouter.post('/posts', validateSchemaMiddleware(postSchema), sendPost)
 postRouter.get('/posts', filterPostMiddleware, getPosts);
+postRouter.get('/posts/:id', filterPostMiddleware, getPosts);
 postRouter.delete('/posts/:idPost', validateToken, deletePost);
 
 export default postRouter;
