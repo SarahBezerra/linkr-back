@@ -5,6 +5,7 @@ export async function validateToken(req, res, next) {
   const errorMessage = "Faça login/cadastro para continuar";
 
   const token = authorization?.replace("Bearer ", "");
+  
   if (!token) {
     return res.status(401).send(errorMessage);
   }
@@ -19,6 +20,7 @@ export async function validateToken(req, res, next) {
     return res.status(401).send(errorMessage);
   }
 
+  console.log(user);
   res.locals.user = user.rows[0];
 
   next();

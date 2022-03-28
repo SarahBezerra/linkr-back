@@ -31,6 +31,7 @@ async function createPublicContent(userId, username, image_url) {
   );
 }
 
+
 async function createSession(userId, token) {
   return connection.query(
     `

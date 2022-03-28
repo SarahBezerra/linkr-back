@@ -7,13 +7,15 @@ export default function filterPostMiddleware(req, res, next){
     const params = res.locals.params || [];
 
     if(hashtag){
-        params.push(`%${hashtag}%`);
-        conditions.push(`text ILIKE $${params.length}`);
+        params.push(`%#${hashtag} %`);
+        params.push(`%#${hashtag}`);
+        conditions.push(`text ILIKE $${params.length-1} OR
+                         text ILIKE $${params.length}`);
     }
 
     if(id){
         params.push(id);
-        conditions.push(`"userId"=$${params.length}`);
+        conditions.push(`pu."userId"=$${params.length}`);
     }
 
 
