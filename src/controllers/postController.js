@@ -1,6 +1,5 @@
 import { postRepository } from "../repositories/postRepository.js";
 import urlMetadata from "url-metadata";
-import { connection } from "../database.js";
 
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
@@ -76,3 +75,22 @@ export async function deletePost(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function updatePost(req, res) {
+  const { user } = res.locals;
+  const { postId } = req.params;
+  const { message } = req.body;
+
+  try {
+    const postExist = await postRepository.verifyAuthPost(postId, user.userId);
+    if (postExist.rowCount === 0) return res.sendStatus(400);
+
+    await postRepository.updatePost(postId, message);
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
+

@@ -2,7 +2,7 @@ import { likeRepository } from "../repositories/likeRepository.js";
 
 export async function getLikes(req, res) {
   const { user } = res.locals;
-  const theUser = user.userId;
+  const theUser = user?.userId;
 
   try {
     const requestLikes = await likeRepository.countLikesPosts();

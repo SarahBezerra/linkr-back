@@ -34,13 +34,13 @@ async function storeHashtags(id, text) {
   try {
     const hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
 
-    const hashtagArray = hashtags.reduce((prev, curr) => {
+    const hashtagArray = hashtags?.reduce((prev, curr) => {
       let [junk, hashtag] = curr.split("#");
       prev.push(hashtag);
       return prev;
     }, []);
 
-    for (let i = 0; i < hashtagArray.length; i++) {
+    for (let i = 0; i < hashtagArray?.length; i++) {
       let newId = 0;
 
       const {
@@ -121,6 +121,10 @@ async function deletePostId(idPost) {
   return connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
 }
 
+async function updatePost(postId, message) {
+  return connection.query(`UPDATE posts SET text=$1 WHERE id=$2`, [message, postId]);
+}
+
 export const postRepository = {
   getPosts,
   storePost,
@@ -131,4 +135,5 @@ export const postRepository = {
   deletePostId,
   deleteMetadataPost,
   deleteHashtagsPost,
+  updatePost
 };
