@@ -10,7 +10,6 @@ export async function getPosts(req, res) {
     const result = await postRepository.getPosts(conditions, params);
 
     const postsList = [];
-    console.log(result.rows);
 
     for (const r of result.rows) {
       // const meta = await urlMetadata(r.url);
@@ -45,7 +44,6 @@ export async function sendPost(req, res) {
   const { user } = res.locals;
   const { url, text } = req.body;
   try {
-    
     const meta = await urlMetadata(url);
     const postId = await postRepository.storePost(user.userId, url, text);
     await postRepository.storeHashtags(postId, text);

@@ -11,6 +11,6 @@ router.use(authRouter);
 router.use(likeRouter);
 router.use(postRouter);
 router.use(hashtagRouter);
-router.use(validateToken, likeRouter);
+router.use(likeRouter);
 
 export default router;
