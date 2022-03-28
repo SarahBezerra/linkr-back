@@ -8,38 +8,32 @@ async function getPosts(conditions = [], params = []) {
   }
 
   return connection.query(
-    `
-        SELECT po.*, pu.username, pu."image_url",
+    
+        `SELECT po.*, pu.username, pu."image_url",
           me.title, me.image, me.description
         FROM posts po
         JOIN public_contents pu ON po."userId"=pu."userId"
         JOIN metadata me ON po.id = me."postId"
 
-    ${query}
+        ${query}
 
         ORDER BY po.post_date DESC
-        LIMIT 20
-    `,
+        LIMIT 20`
+    ,
     params
   );
 
 }
 
-async function sendPost(id, url, text) {
-  return connection.query(`
-        INSERT INTO posts
-`);
-}
-
 async function storeHashtags(id, text) {
   try {
-    const hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
-
-    const hashtagArray = hashtags?.reduce((prev, curr) => {
-      let [junk, hashtag] = curr.split("#");
+    let hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
+    
+    const hashtagArray = hashtags.reduce((prev, curr) => {
+      let [junk, hashtag] =  curr.split('#');
       prev.push(hashtag);
-      return prev;
-    }, []);
+      return prev
+  },[])
 
     for (let i = 0; i < hashtagArray?.length; i++) {
       let newId = 0;
