@@ -22,13 +22,8 @@ async function getPosts(conditions = [], params = []) {
     ,
     params
   );
-}
 
-// async function sendPost(id, url, text) {
-//   return connection.query(`
-//         INSERT INTO posts
-// `);
-// }
+}
 
 async function storeHashtags(id, text) {
   try {
@@ -40,7 +35,7 @@ async function storeHashtags(id, text) {
       return prev
   },[])
 
-    for (let i = 0; i < hashtagArray.length; i++) {
+    for (let i = 0; i < hashtagArray?.length; i++) {
       let newId = 0;
 
       const {
@@ -82,7 +77,6 @@ async function storeMetadata(postId, meta) {
   );
 }
 
-
 async function storePost(id, url, text) {
   try {
     const {
@@ -122,6 +116,10 @@ async function deletePostId(idPost) {
   return connection.query(`DELETE FROM posts WHERE id = $1`, [idPost]);
 }
 
+async function updatePost(postId, message) {
+  return connection.query(`UPDATE posts SET text=$1 WHERE id=$2`, [message, postId]);
+}
+
 export const postRepository = {
   getPosts,
   storePost,
@@ -132,4 +130,5 @@ export const postRepository = {
   deletePostId,
   deleteMetadataPost,
   deleteHashtagsPost,
+  updatePost
 };

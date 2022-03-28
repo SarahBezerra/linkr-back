@@ -9,7 +9,6 @@ export async function getPosts(req, res) {
     const result = await postRepository.getPosts(conditions, params);
 
     const postsList = [];
-    console.log(result.rows);
 
     for (const r of result.rows) {
       // const meta = await urlMetadata(r.url);
@@ -45,7 +44,6 @@ export async function sendPost(req, res) {
   const { user } = res.locals;
   const { url, text } = req.body;
   try {
-
     const meta = await urlMetadata(url);
     const postId = await postRepository.storePost(user.userId, url, text);
     await postRepository.storeHashtags(postId, text);
@@ -56,8 +54,6 @@ export async function sendPost(req, res) {
     res.status(500).send(error);
   }
 }
-
-
 
 export async function deletePost(req, res) {
   const { user } = res.locals;
@@ -78,3 +74,22 @@ export async function deletePost(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function updatePost(req, res) {
+  const { user } = res.locals;
+  const { postId } = req.params;
+  const { message } = req.body;
+
+  try {
+    const postExist = await postRepository.verifyAuthPost(postId, user.userId);
+    if (postExist.rowCount === 0) return res.sendStatus(400);
+
+    await postRepository.updatePost(postId, message);
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
+
