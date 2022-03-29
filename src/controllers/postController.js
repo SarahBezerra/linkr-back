@@ -4,6 +4,9 @@ import urlMetadata from "url-metadata";
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { params } = res.locals;
+  const { user } = res.locals;
+  
+  console.log(user);
 
   try {
     const result = await postRepository.getPosts(conditions, params);
@@ -11,8 +14,6 @@ export async function getPosts(req, res) {
     const postsList = [];
 
     for (const r of result.rows) {
-      // const meta = await urlMetadata(r.url);
-      // console.log(meta);
 
       const postObject = {
         id: r.id,
