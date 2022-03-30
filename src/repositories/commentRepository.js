@@ -14,7 +14,7 @@ function getNumberComments() {
 
 function getPostComments(userId, postId) {
   return connection.query(
-    `SELECT c.id, c.text, c."userId", po."userId" as "authorPost", 
+    `SELECT c.id, c.text, c."userId" as "idUserComment", po."userId" as "idAuthor", 
       se."followerId", p."image_url", p.username
     FROM comments c
       JOIN posts po ON po.id = c."postId"

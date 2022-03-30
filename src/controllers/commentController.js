@@ -41,7 +41,7 @@ export async function getPostComments(req, res) {
         followerId,
       }) => {
         const authorPost = idUserComment === idAuthor ? true : false;
-        const followUser = followerId === userLog ? true : false;
+        const followUser = followerId !== null ? true : false;
 
         return { id, text, image_url, username, authorPost, followUser };
       }
