@@ -16,7 +16,7 @@ export async function getInitComments(req, res) {
 export async function getPostComments(req, res) {
   const { user } = res.locals;
   const { postId } = req.params;
-  const userId = user.userId;
+  const userLog = user.userId;
 
   try {
     const postExist = await commentRepository.verifyPostExist(postId);
@@ -24,7 +24,7 @@ export async function getPostComments(req, res) {
     if (!(postExist.rowCount > 0)) return res.sendStatus(404);
 
     const resListComments = await commentRepository.getPostComments(
-      userId,
+      userLog,
       postId
     );
 
@@ -36,13 +36,13 @@ export async function getPostComments(req, res) {
         id,
         text,
         image_url,
-        userId: idUserComment,
+        idUserComment,
         username,
         idAuthor,
         followerId,
       }) => {
         const authorPost = idUserComment === idAuthor ? true : false;
-        const followUser = followerId === userId ? true : false;
+        const followUser = followerId === userLog ? true : false;
 
         return { id, text, image_url, username, authorPost, followUser };
       }
