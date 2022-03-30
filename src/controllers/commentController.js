@@ -1,4 +1,3 @@
-import { connection } from "../database.js";
 import { commentRepository } from "../repositories/commentRepository.js";
 
 export async function getInitComments(req, res) {
