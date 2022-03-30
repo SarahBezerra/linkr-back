@@ -4,6 +4,14 @@ function verifyPostExist(postId) {
   return connection.query(`SELECT * FROM posts WHERE id=$1`, [postId]);
 }
 
+function getNumberComments() {
+  return connection.query(`
+  SELECT COUNT("userId") as numberComments, "postId" 
+  FROM comments 
+  GROUP BY "postId";
+    `);
+}
+
 function getPostComments(userId, postId) {
   return connection.query(
     `SELECT c.id, c.text, c."userId", po."userId" as "authorPost", 
@@ -31,6 +39,7 @@ function insertNewComment(userId, postId, text) {
 
 export const commentRepository = {
   verifyPostExist,
+  getNumberComments,
   insertNewComment,
   getPostComments,
 };

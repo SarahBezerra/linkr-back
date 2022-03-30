@@ -2,7 +2,15 @@ import { connection } from "../database.js";
 import { commentRepository } from "../repositories/commentRepository.js";
 
 export async function getInitComments(req, res) {
-  res.sendStatus(200);
+  try {
+    const response = await commentRepository.getNumberComments();
+    const numberComments = response.rows;
+
+    res.status(200).send(numberComments);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
 
 export async function getPostComments(req, res) {
