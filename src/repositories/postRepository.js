@@ -1,12 +1,14 @@
 import { connection } from "../database.js";
 
-async function getPosts(conditions = [], params = []) {
+async function getPosts(conditions = [], params = [], loadCount) {
   let query = "";
 
   if (conditions.length > 0) {
     query += `WHERE ${conditions.join(" AND ")}`;
   }
 
+  const loadCountInt = parseInt(loadCount);
+  
   return connection.query(
     
         `SELECT po.*, pu.username, pu."image_url",
@@ -18,7 +20,9 @@ async function getPosts(conditions = [], params = []) {
         ${query}
 
         ORDER BY po.post_date DESC
-        LIMIT 20`
+        OFFSET ${loadCountInt > 0 ? 10 : 0}
+        LIMIT ${loadCountInt > 0 ? 10*(loadCount) : 10}
+        `
     ,
     params
   );
@@ -29,7 +33,7 @@ async function storeHashtags(id, text) {
   try {
     let hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
     
-    const hashtagArray = hashtags.reduce((prev, curr) => {
+    const hashtagArray = hashtags?.reduce((prev, curr) => {
       let [junk, hashtag] =  curr.split('#');
       prev.push(hashtag);
       return prev

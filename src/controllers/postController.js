@@ -4,9 +4,10 @@ import urlMetadata from "url-metadata";
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { params } = res.locals;
+  const {loadCount} = req.query;
 
   try {
-    const result = await postRepository.getPosts(conditions, params);
+    const result = await postRepository.getPosts(conditions, params, loadCount);
 
     const postsList = [];
 
