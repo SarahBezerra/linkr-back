@@ -1,24 +1,39 @@
 import { connection } from "../database.js";
 
 async function getPosts(conditions = [], params = []) {
-  let query = "";
+  // let query = "";
 
-  if (conditions.length > 0) {
-    query += `WHERE ${conditions.join(" AND ")}`;
-  }
+  // if (conditions.length > 0) {
+  //   query += `${conditions.join(" AND ")}`;
+  // }
+
+  const query = `${conditions.join(" AND ")}`;
 
   return connection.query(
     
-        `SELECT po.*, pu.username, pu."image_url",
-          me.title, me.image, me.description
-        FROM posts po
-        JOIN public_contents pu ON po."userId"=pu."userId"
-        JOIN metadata me ON po.id = me."postId"
+        `
+          SELECT 	po.*, pu.username, pu."image_url",
+                  me.title, me.image, me.description,
+                  re.id AS "repostId", re."userId" AS "reposterId", re.date AS "repostDate",
+                  pu2.username AS "reposterName",
+                  "repostCount"."shareCount"
+          FROM posts po
+          JOIN public_contents pu ON po."userId"=pu."userId"
+          LEFT JOIN reposts re ON re."postId"=po.id
+          LEFT JOIN public_contents pu2 ON re."userId"=pu2."userId"
+          JOIN metadata me ON po.id = me."postId"
+          LEFT JOIN 
+		                ( select p.id, count(p.id) AS "shareCount"
+		                  from posts p
+		                  join reposts r on p.id=r."postId" 
+		                group by p.id ) AS "repostCount" ON "repostCount".id=po.id
+            WHERE 
 
-        ${query}
+                ${query}
 
-        ORDER BY po.post_date DESC
-        LIMIT 20`
+          ORDER BY GREATEST(re.date, po.post_date) DESC NULLS LAST
+          LIMIT 20
+        `
     ,
     params
   );

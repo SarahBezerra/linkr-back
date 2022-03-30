@@ -4,9 +4,7 @@ import urlMetadata from "url-metadata";
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { params } = res.locals;
-  const { user } = res.locals;
   
-  console.log(user);
 
   try {
     const result = await postRepository.getPosts(conditions, params);
@@ -21,6 +19,15 @@ export async function getPosts(req, res) {
         username: r.username,
         text: r.text,
         image_url: r.image_url,
+
+        repost: (r.repostId === null) ? undefined :
+        {
+          id: r.repostId,
+          reposterId: r.reposterId,
+          reposterName: r.reposterName,
+          date: r.repostDate,
+          shareCount: r.shareCount,
+        },
 
         metaData: {
           url: r.url,
