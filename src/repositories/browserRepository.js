@@ -3,7 +3,7 @@ import { connection } from "../database.js"
 async function filterUsers(string){
 
     string += '%'
-
+    string = '%' + string;
     try{
         const {rows: usersArray} = await connection.query(
             `SELECT

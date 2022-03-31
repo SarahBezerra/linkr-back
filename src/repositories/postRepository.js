@@ -20,8 +20,7 @@ async function getPosts(conditions = [], params = [], loadCount) {
         ${query}
 
         ORDER BY po.post_date DESC
-        OFFSET ${loadCountInt > 0 ? 10 : 0}
-        LIMIT ${loadCountInt > 0 ? 10*(loadCount) : 10}
+        LIMIT ${loadCountInt > 0 ? 10*(loadCountInt) : 10}
         `
     ,
     params
