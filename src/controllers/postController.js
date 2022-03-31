@@ -85,7 +85,10 @@ export async function updatePost(req, res) {
     const postExist = await postRepository.verifyAuthPost(postId, user.userId);
     if (postExist.rowCount === 0) return res.sendStatus(400);
 
+    await postRepository.deleteHashtagsPost(postId);
     await postRepository.updatePost(postId, message);
+    await postRepository.storeHashtags(postId, message);
+
     res.sendStatus(200);
 
   } catch (err) {
