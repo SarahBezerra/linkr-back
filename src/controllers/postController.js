@@ -3,17 +3,16 @@ import urlMetadata from "url-metadata";
 
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
+  const { conditionsUnion } = res.locals;
   const { params } = res.locals;
   const {loadCount} = req.query;
 
   try {
-    const result = await postRepository.getPosts(conditions, params, loadCount);
+    const result = await postRepository.getPosts(conditions, conditionsUnion, params, loadCount);
 
     const postsList = [];
 
     for (const r of result.rows) {
-      // const meta = await urlMetadata(r.url);
-      // console.log(meta);
 
       const postObject = {
         id: r.id,
@@ -21,6 +20,15 @@ export async function getPosts(req, res) {
         username: r.username,
         text: r.text,
         image_url: r.image_url,
+
+        repost: (r.repostId === null) ? undefined :
+        {
+          id: r.repostId,
+          reposterId: r.reposterId,
+          reposterName: r.reposterName,
+          date: r.repostDate,
+          shareCount: r.shareCount,
+        },
 
         metaData: {
           url: r.url,
@@ -96,4 +104,3 @@ export async function updatePost(req, res) {
     res.sendStatus(500);
   }
 }
-

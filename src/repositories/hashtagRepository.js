@@ -1,7 +1,7 @@
 import { connection } from "../database.js";
 
 
-async function getTopHashtags(){
+async function getTopHashtags(limit = 10){
     return connection.query(`
         SELECT sorted.hashname AS text, sorted.counter1 AS count
         FROM  (
@@ -20,10 +20,9 @@ async function getTopHashtags(){
                 order by sub.counter1 DESC) as agr
             ORDER BY lower(agr.hashname), counter DESC) AS sorted
         ORDER BY counter1 DESC
-        LIMIT 10
-    `);
+        LIMIT $1
+    `, [limit]);
 }
-
 
 
 export const hashtagRepository = {
