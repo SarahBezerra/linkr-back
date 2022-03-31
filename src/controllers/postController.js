@@ -5,17 +5,10 @@ export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { conditionsUnion } = res.locals;
   const { params } = res.locals;
-<<<<<<< HEAD
-  
-
-  try {
-    const result = await postRepository.getPosts(conditions, conditionsUnion, params);
-=======
   const {loadCount} = req.query;
 
   try {
-    const result = await postRepository.getPosts(conditions, params, loadCount);
->>>>>>> c01d0eba67921dec67c7acc70e41e00045907b06
+    const result = await postRepository.getPosts(conditions, conditionsUnion, params, loadCount);
 
     const postsList = [];
 

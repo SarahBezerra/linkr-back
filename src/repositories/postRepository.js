@@ -1,16 +1,6 @@
 import { connection } from "../database.js";
 
-<<<<<<< HEAD
-async function getPosts(conditions = [], conditionsUnion = [], params = []) {
-  // let query = "";
-=======
-async function getPosts(conditions = [], params = [], loadCount) {
-  let query = "";
->>>>>>> c01d0eba67921dec67c7acc70e41e00045907b06
-
-  // if (conditions.length > 0) {
-  //   query += `${conditions.join(" AND ")}`;
-  // }
+async function getPosts(conditions = [], conditionsUnion = [], params = [], loadCount = 0) {
 
   const query = `${conditions.join(" AND ")}`;
   const queryUnion = `${conditionsUnion.join(" AND ")}`;
@@ -19,7 +9,6 @@ async function getPosts(conditions = [], params = [], loadCount) {
   
   return connection.query(
     
-<<<<<<< HEAD
         `
           SELECT * FROM(
             SELECT 	po.*, pu.username, pu."image_url",
@@ -58,19 +47,7 @@ async function getPosts(conditions = [], params = [], loadCount) {
             ) "finalTable"
 
             ORDER BY GREATEST("repostDate", post_date) DESC NULLS LAST
-            LIMIT 20
-=======
-        `SELECT po.*, pu.username, pu."image_url",
-          me.title, me.image, me.description
-        FROM posts po
-        JOIN public_contents pu ON po."userId"=pu."userId"
-        JOIN metadata me ON po.id = me."postId"
-
-        ${query}
-
-        ORDER BY po.post_date DESC
-        LIMIT ${loadCountInt > 0 ? 10*(loadCountInt) : 10}
->>>>>>> c01d0eba67921dec67c7acc70e41e00045907b06
+            LIMIT ${loadCountInt > 0 ? 10*(loadCountInt) : 10}
         `
     ,
     params
