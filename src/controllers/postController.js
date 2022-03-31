@@ -5,10 +5,17 @@ export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { conditionsUnion } = res.locals;
   const { params } = res.locals;
+<<<<<<< HEAD
   
 
   try {
     const result = await postRepository.getPosts(conditions, conditionsUnion, params);
+=======
+  const {loadCount} = req.query;
+
+  try {
+    const result = await postRepository.getPosts(conditions, params, loadCount);
+>>>>>>> c01d0eba67921dec67c7acc70e41e00045907b06
 
     const postsList = [];
 
@@ -93,7 +100,10 @@ export async function updatePost(req, res) {
     const postExist = await postRepository.verifyAuthPost(postId, user.userId);
     if (postExist.rowCount === 0) return res.sendStatus(400);
 
+    await postRepository.deleteHashtagsPost(postId);
     await postRepository.updatePost(postId, message);
+    await postRepository.storeHashtags(postId, message);
+
     res.sendStatus(200);
 
   } catch (err) {
