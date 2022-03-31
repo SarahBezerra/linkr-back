@@ -3,11 +3,12 @@ import urlMetadata from "url-metadata";
 
 export async function getPosts(req, res) {
   const { conditions } = res.locals;
+  const { conditionsUnion } = res.locals;
   const { params } = res.locals;
   
 
   try {
-    const result = await postRepository.getPosts(conditions, params);
+    const result = await postRepository.getPosts(conditions, conditionsUnion, params);
 
     const postsList = [];
 
@@ -100,4 +101,3 @@ export async function updatePost(req, res) {
     res.sendStatus(500);
   }
 }
-

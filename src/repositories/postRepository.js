@@ -1,6 +1,6 @@
 import { connection } from "../database.js";
 
-async function getPosts(conditions = [], params = []) {
+async function getPosts(conditions = [], conditionsUnion = [], params = []) {
   // let query = "";
 
   // if (conditions.length > 0) {
@@ -8,31 +8,49 @@ async function getPosts(conditions = [], params = []) {
   // }
 
   const query = `${conditions.join(" AND ")}`;
+  const queryUnion = `${conditionsUnion.join(" AND ")}`;
 
   return connection.query(
     
         `
-          SELECT 	po.*, pu.username, pu."image_url",
-                  me.title, me.image, me.description,
-                  re.id AS "repostId", re."userId" AS "reposterId", re.date AS "repostDate",
-                  pu2.username AS "reposterName",
-                  "repostCount"."shareCount"
-          FROM posts po
-          JOIN public_contents pu ON po."userId"=pu."userId"
-          LEFT JOIN reposts re ON re."postId"=po.id
-          LEFT JOIN public_contents pu2 ON re."userId"=pu2."userId"
-          JOIN metadata me ON po.id = me."postId"
-          LEFT JOIN 
-		                ( select p.id, count(p.id) AS "shareCount"
-		                  from posts p
-		                  join reposts r on p.id=r."postId" 
-		                group by p.id ) AS "repostCount" ON "repostCount".id=po.id
-            WHERE 
+          SELECT * FROM(
+            SELECT 	po.*, pu.username, pu."image_url",
+                    me.title, me.image, me.description,
+                    re.id AS "repostId", re."userId" AS "reposterId", re.date AS "repostDate",
+                    pu2.username AS "reposterName",
+                    "repostCount"."shareCount"
+            FROM posts po
+            JOIN public_contents pu ON po."userId"=pu."userId"
+            LEFT JOIN reposts re ON re."postId"=po.id
+            LEFT JOIN public_contents pu2 ON re."userId"=pu2."userId"
+            JOIN metadata me ON po.id = me."postId"
+            LEFT JOIN 
+                      ( select p.id, count(p.id) AS "shareCount"
+                        from posts p
+                        join reposts r on p.id=r."postId" 
+                      group by p.id ) AS "repostCount" ON "repostCount".id=po.id
+              WHERE 
 
-                ${query}
+                  ${query}
 
-          ORDER BY GREATEST(re.date, po.post_date) DESC NULLS LAST
-          LIMIT 20
+              UNION
+
+              SELECT 	po.*, pu.username, pu."image_url",
+                    me.title, me.image, me.description,
+                    NULL AS "repostId", NULL AS "reposterId", NULL AS "repostDate",
+                    NULL AS "reposterName",
+                    NULL AS "shareCount"
+              FROM posts po
+              JOIN public_contents pu ON po."userId"=pu."userId"
+              JOIN metadata me ON po.id = me."postId"
+              WHERE 
+                  
+                    ${queryUnion}
+
+            ) "finalTable"
+
+            ORDER BY GREATEST("repostDate", post_date) DESC NULLS LAST
+            LIMIT 20
         `
     ,
     params
