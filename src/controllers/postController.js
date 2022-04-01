@@ -47,7 +47,20 @@ export async function getPosts(req, res) {
       postsList.push(postObject);
     }
 
+    if(postsList.length === 0){
+      const followSomeone = await postRepository.getFollowed(params[0]);
+
+      if(followSomeone.rowCount === 0){
+        const noFriends = true
+        return res.send( {noFriends} );
+      }
+
+      const noPosts = true
+      return res.send( {noPosts} );
+    }
+
     res.send(postsList);
+
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

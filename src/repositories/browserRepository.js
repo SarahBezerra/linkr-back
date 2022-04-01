@@ -1,23 +1,60 @@
 import { connection } from "../database.js"
 
-async function filterUsers(string){
+async function filterUsers(username, userId){
 
-    string += '%'
-    string = '%' + string;
+
+    username += '%'
+
+
     try{
         const {rows: usersArray} = await connection.query(
-            `SELECT
-                pc.username, pc.image_url, u.id 
-             FROM 
+            `
+            WITH
+                followed_ref AS (
+                    SELECT 
+                        f."followedId" 
+                    FROM 
+                        follows f 
+                    WHERE 
+                        f."followerId" = $1
+                ), 
+                users_rank AS (
+                    SELECT users.id, CASE 
+                    WHEN users.id = followed_ref."followedId" 
+                        THEN 1
+                        ELSE 0
+                    END AS 
+                        status 
+                    FROM 
+                        users
+                    LEFT JOIN 
+                        followed_ref 
+                    ON
+                        followed_ref."followedId" = users.id
+                )
+            SELECT
+                pc.username, pc.image_url, u.id, ur.status
+            FROM 
                 public_contents pc
-             JOIN
+            JOIN
                 users u
-             ON
+            ON
                 u.id = pc."userId"
+            JOIN
+                users_rank ur
+            ON 
+                u.id = ur.id
             WHERE 
-                pc.username LIKE $1`
+                lower(pc.username) LIKE $2
+            ORDER BY
+                ur.status
+            DESC
+                
+            `
+            
+            
 
-        ,[string])
+        ,[userId, username])
 
         return usersArray
     }

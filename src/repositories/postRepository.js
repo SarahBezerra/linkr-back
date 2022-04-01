@@ -56,6 +56,16 @@ async function getPosts(
   );
 }
 
+async function getFollowed(userId) {
+  
+  return connection.query(
+    `SELECT * 
+    FROM follows
+    WHERE follows."followerId"=${userId}`
+  );
+
+}
+
 async function storeHashtags(id, text) {
   try {
     let hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
@@ -186,6 +196,7 @@ async function updatePost(postId, message) {
 
 export const postRepository = {
   getPosts,
+  getFollowed,
   storePost,
   storeHashtags,
   verifyPostExist,
