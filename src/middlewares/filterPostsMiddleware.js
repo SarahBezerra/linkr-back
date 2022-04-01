@@ -12,7 +12,7 @@ export default function filterPostMiddleware(req, res, next){
     if(!hasParams(req.params)){
         params.push(user.userId);
         const query = `
-                po."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length}) 
+                (po."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length}) AND re."userId" IS NULL)
             OR  po."userId" IN ($${params.length})
         `;
         conditions.push(`${query}
