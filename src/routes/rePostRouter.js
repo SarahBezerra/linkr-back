@@ -4,7 +4,7 @@ import { validateToken } from "../middlewares/validateToken.js";
 
 const rePostRouter = Router();
 
-rePostRouter.get("/rePost", validateToken, getRePosts);
-rePostRouter.post("/rePost/:idPost", validateToken, toggleRePost);
+rePostRouter.get("/rePost", getRePosts);
+rePostRouter.post("/rePost/:idPost", toggleRePost);
 
 export default rePostRouter;

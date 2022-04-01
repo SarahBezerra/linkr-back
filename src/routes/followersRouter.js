@@ -1,11 +1,14 @@
 import { Router } from "express";
-import { deleteFollow, getFollowers, postFollow } from "../controllers/followersController.js";
-import { validateToken } from "../middlewares/validateToken.js";
+import {
+  deleteFollow,
+  getFollowers,
+  postFollow,
+} from "../controllers/followersController.js";
 
 const followersRouter = Router();
 
-followersRouter.get('/follows/:pageUserId', validateToken, getFollowers);
-followersRouter.post('/follows', validateToken, postFollow);
-followersRouter.delete('/follows/:pageUserId', validateToken, deleteFollow);
+followersRouter.get("/follows/:pageUserId", getFollowers);
+followersRouter.post("/follows", postFollow);
+followersRouter.delete("/follows/:pageUserId", deleteFollow);
 
 export default followersRouter;

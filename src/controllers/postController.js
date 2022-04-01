@@ -5,15 +5,19 @@ export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { conditionsUnion } = res.locals;
   const { params } = res.locals;
-  const {loadCount} = req.query;
+  const { loadCount } = req.query;
 
   try {
-    const result = await postRepository.getPosts(conditions, conditionsUnion, params, loadCount);
+    const result = await postRepository.getPosts(
+      conditions,
+      conditionsUnion,
+      params,
+      loadCount
+    );
 
     const postsList = [];
 
     for (const r of result.rows) {
-
       const postObject = {
         id: r.id,
         userId: r.userId,
@@ -21,14 +25,16 @@ export async function getPosts(req, res) {
         text: r.text,
         image_url: r.image_url,
 
-        repost: (r.repostId === null) ? undefined :
-        {
-          id: r.repostId,
-          reposterId: r.reposterId,
-          reposterName: r.reposterName,
-          date: r.repostDate,
-          shareCount: r.shareCount,
-        },
+        repost:
+          r.repostId === null
+            ? undefined
+            : {
+                id: r.repostId,
+                reposterId: r.reposterId,
+                reposterName: r.reposterName,
+                date: r.repostDate,
+                shareCount: r.shareCount,
+              },
 
         metaData: {
           url: r.url,
@@ -41,26 +47,59 @@ export async function getPosts(req, res) {
       postsList.push(postObject);
     }
 
-    if(postsList.length === 0){
+    if (postsList.length === 0) {
       const followSomeone = await postRepository.getFollowed(params[0]);
 
-      if(followSomeone.rowCount === 0){
-        const noFriends = true
-        return res.send( {noFriends} );
+      if (followSomeone.rowCount === 0) {
+        const noFriends = true;
+        return res.send({ noFriends });
       }
 
-      const noPosts = true
-      return res.send( {noPosts} );
+      const noPosts = true;
+      return res.send({ noPosts });
     }
 
     res.send(postsList);
-
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 }
 
+export async function getPostsWithInterval(req, res) {
+  const { idPost } = req.params;
+  const { user } = res.locals;
+  const { date } = req.body;
+  const userId = user.userId;
+
+  try {
+    let lastDate = "";
+
+    if (date === undefined) {
+      const responseVerify = await postRepository.verifyPostExist(idPost);
+
+      if (responseVerify.rowCount === 0) return res.sendStatus(404);
+
+      const responseDate = await postRepository.getDatePost(idPost);
+      lastDate = responseDate.rows[0].date;
+    }
+
+    if (lastDate.length === 0) lastDate = date;
+
+    const requestNumber = await postRepository.countNumberPosts(
+      lastDate,
+      userId
+    );
+    const number = requestNumber.rowCount;
+
+    res
+      .status(200)
+      .send(date !== undefined ? { count: number } : { count: number - 1 });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
 
 export async function sendPost(req, res) {
   const { user } = res.locals;
@@ -111,7 +150,6 @@ export async function updatePost(req, res) {
     await postRepository.storeHashtags(postId, message);
 
     res.sendStatus(200);
-
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
