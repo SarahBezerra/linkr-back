@@ -47,20 +47,19 @@ export async function getPosts(req, res) {
       postsList.push(postObject);
     }
 
-    if(postsList.length === 0){
+    if (postsList.length === 0) {
       const followSomeone = await postRepository.getFollowed(params[0]);
 
-      if(followSomeone.rowCount === 0){
-        const noFriends = true
-        return res.send( {noFriends} );
+      if (followSomeone.rowCount === 0) {
+        const noFriends = true;
+        return res.send({ noFriends });
       }
 
-      const noPosts = true
-      return res.send( {noPosts} );
+      const noPosts = true;
+      return res.send({ noPosts });
     }
 
     res.send(postsList);
-
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -70,23 +69,31 @@ export async function getPosts(req, res) {
 export async function getPostsWithInterval(req, res) {
   const { idPost } = req.params;
   const { user } = res.locals;
+  const { date } = req.body;
   const userId = user.userId;
 
   try {
-    const responseVerify = await postRepository.verifyPostExist(idPost);
+    let lastDate = "";
 
-    if (responseVerify.rowCount === 0) return res.sendStatus(404);
+    if (date === undefined) {
+      const responseVerify = await postRepository.verifyPostExist(idPost);
 
-    const responseDate = await postRepository.getDatePost(idPost);
-    const lastDate = responseDate.rows[0].date;
+      if (responseVerify.rowCount === 0) return res.sendStatus(404);
+
+      const responseDate = await postRepository.getDatePost(idPost);
+      lastDate = responseDate.rows[0].date;
+    }
+
+    if (lastDate.length === 0) lastDate = date;
 
     const requestNumber = await postRepository.countNumberPosts(
       lastDate,
       userId
     );
     const number = requestNumber.rows[0].count;
+    console.log(lastDate);
 
-    res.status(200).send({ count: number - 1 });
+    res.status(200).send({ count: number });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

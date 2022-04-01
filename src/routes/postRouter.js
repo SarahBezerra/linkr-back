@@ -23,6 +23,6 @@ postRouter.get("/posts", validateToken, filterPostMiddleware, getPosts);
 postRouter.get("/posts/:id", validateToken, filterPostMiddleware, getPosts);
 postRouter.delete("/posts/:idPost", validateToken, deletePost);
 postRouter.put("/posts/:postId", validateToken, updatePost);
-postRouter.get("/newposts/:idPost", validateToken, getPostsWithInterval);
+postRouter.post("/newposts/:idPost", validateToken, getPostsWithInterval);
 
 export default postRouter;
