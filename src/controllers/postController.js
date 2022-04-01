@@ -94,7 +94,7 @@ export async function getPostsWithInterval(req, res) {
 
     res
       .status(200)
-      .send(date !== undefined ? { count: number } : { count: number - 1 });
+      .send(date !== undefined ? { count: number - 1 } : { count: number });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
