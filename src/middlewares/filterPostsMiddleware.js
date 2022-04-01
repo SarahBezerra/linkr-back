@@ -14,12 +14,15 @@ export default function filterPostMiddleware(req, res, next){
         const query = `
                 (po."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length}) AND re."userId" IS NULL)
             OR  po."userId" IN ($${params.length})
-        `;
-        conditions.push(`${query}
             OR  re."userId" IN ($${params.length})
             OR 	re."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length})
-        `);
-        conditionsUnion.push(query);
+        `;
+        const queryUnion = `
+                po."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length})
+            OR  po."userId" IN ($${params.length})
+        `;
+        conditions.push(query);
+        conditionsUnion.push(queryUnion);
     }
     
     if(hashtag){
