@@ -1,15 +1,18 @@
 import { connection } from "../database.js";
 
-async function getPosts(conditions = [], conditionsUnion = [], params = [], loadCount = 0) {
-
+async function getPosts(
+  conditions = [],
+  conditionsUnion = [],
+  params = [],
+  loadCount = 0
+) {
   const query = `${conditions.join(" AND ")}`;
   const queryUnion = `${conditionsUnion.join(" AND ")}`;
 
   const loadCountInt = parseInt(loadCount);
-  
+
   return connection.query(
-    
-        `
+    `
           SELECT * FROM(
             SELECT 	po.*, pu.username, pu."image_url",
                     me.title, me.image, me.description,
@@ -47,23 +50,21 @@ async function getPosts(conditions = [], conditionsUnion = [], params = [], load
             ) "finalTable"
 
             ORDER BY GREATEST("repostDate", post_date) DESC NULLS LAST
-            LIMIT ${loadCountInt > 0 ? 10*(loadCountInt) : 10}
-        `
-    ,
+            LIMIT ${loadCountInt > 0 ? 10 * loadCountInt : 10}
+        `,
     params
   );
-
 }
 
 async function storeHashtags(id, text) {
   try {
     let hashtags = text.match(/(^#[a-zA-Z0-9]+)|(\s#[a-zA-Z0-9]+)/gi);
-    
+
     const hashtagArray = hashtags?.reduce((prev, curr) => {
-      let [junk, hashtag] =  curr.split('#');
+      let [junk, hashtag] = curr.split("#");
       prev.push(hashtag);
-      return prev
-  },[])
+      return prev;
+    }, []);
 
     for (let i = 0; i < hashtagArray?.length; i++) {
       let newId = 0;
@@ -107,6 +108,36 @@ async function storeMetadata(postId, meta) {
   );
 }
 
+async function getDatePost(idPost) {
+  return connection.query(
+    `
+    SELECT post_date as date from posts 
+    WHERE id=$1
+  `,
+    [idPost]
+  );
+}
+
+async function countNumberPosts(date, userId) {
+  return connection.query(
+    `
+    SELECT COUNT(po.text) FROM posts po
+      LEFT JOIN reposts re ON re."postId" = po.id 
+      LEFT JOIN (
+        SELECT * FROM follows
+        WHERE "followerId" = $1) se 
+      ON se."followedId" = po."userId"
+    WHERE po.post_date > cast($2 as timestamp without time zone) 
+    OR re.date > cast($2 as timestamp without time zone) 
+  `,
+    [userId, date]
+  );
+}
+
+function verifyPostExist(postId) {
+  return connection.query(`SELECT * FROM posts WHERE id=$1`, [postId]);
+}
+
 async function storePost(id, url, text) {
   try {
     const {
@@ -147,18 +178,24 @@ async function deletePostId(idPost) {
 }
 
 async function updatePost(postId, message) {
-  return connection.query(`UPDATE posts SET text=$1 WHERE id=$2`, [message, postId]);
+  return connection.query(`UPDATE posts SET text=$1 WHERE id=$2`, [
+    message,
+    postId,
+  ]);
 }
 
 export const postRepository = {
   getPosts,
   storePost,
   storeHashtags,
+  verifyPostExist,
+  getDatePost,
+  countNumberPosts,
   storeMetadata,
   verifyAuthPost,
   deleteLikesPost,
   deletePostId,
   deleteMetadataPost,
   deleteHashtagsPost,
-  updatePost
+  updatePost,
 };

@@ -5,15 +5,19 @@ export async function getPosts(req, res) {
   const { conditions } = res.locals;
   const { conditionsUnion } = res.locals;
   const { params } = res.locals;
-  const {loadCount} = req.query;
+  const { loadCount } = req.query;
 
   try {
-    const result = await postRepository.getPosts(conditions, conditionsUnion, params, loadCount);
+    const result = await postRepository.getPosts(
+      conditions,
+      conditionsUnion,
+      params,
+      loadCount
+    );
 
     const postsList = [];
 
     for (const r of result.rows) {
-
       const postObject = {
         id: r.id,
         userId: r.userId,
@@ -21,14 +25,16 @@ export async function getPosts(req, res) {
         text: r.text,
         image_url: r.image_url,
 
-        repost: (r.repostId === null) ? undefined :
-        {
-          id: r.repostId,
-          reposterId: r.reposterId,
-          reposterName: r.reposterName,
-          date: r.repostDate,
-          shareCount: r.shareCount,
-        },
+        repost:
+          r.repostId === null
+            ? undefined
+            : {
+                id: r.repostId,
+                reposterId: r.reposterId,
+                reposterName: r.reposterName,
+                date: r.repostDate,
+                shareCount: r.shareCount,
+              },
 
         metaData: {
           url: r.url,
@@ -48,6 +54,31 @@ export async function getPosts(req, res) {
   }
 }
 
+export async function getPostsWithInterval(req, res) {
+  const { idPost } = req.params;
+  const { user } = res.locals;
+  const userId = user.userId;
+
+  try {
+    const responseVerify = await postRepository.verifyPostExist(idPost);
+
+    if (responseVerify.rowCount === 0) return res.sendStatus(404);
+
+    const responseDate = await postRepository.getDatePost(idPost);
+    const lastDate = responseDate.rows[0].date;
+
+    const requestNumber = await postRepository.countNumberPosts(
+      lastDate,
+      userId
+    );
+    const number = requestNumber.rows[0].count;
+
+    res.status(200).send({ count: number - 1 });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
 
 export async function sendPost(req, res) {
   const { user } = res.locals;
@@ -98,7 +129,6 @@ export async function updatePost(req, res) {
     await postRepository.storeHashtags(postId, message);
 
     res.sendStatus(200);
-
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
