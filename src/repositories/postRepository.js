@@ -131,12 +131,12 @@ async function countNumberPosts(date, userId) {
     `
       SELECT po.post_date, po.id as "postId", po."userId" FROM follows f
         JOIN posts po ON po."userId" = f."followedId" 
-      WHERE f."followerId" = $1 OR po."userId" = $1 
+      WHERE (f."followerId" = $1 OR po."userId" = $1 )
         AND po.post_date > $2
     UNION
       SELECT re.date, re."postId" as "rePost", re."userId" FROM follows f
         JOIN reposts re ON re."userId" = f."followedId" 
-      WHERE f."followerId" = $1 OR re."userId" = $1 
+      WHERE (f."followerId" = $1 OR re."userId" = $1 )
         AND re.date > $2
   `,
     [userId, date]
