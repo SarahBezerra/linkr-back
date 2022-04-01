@@ -45,7 +45,7 @@ async function filterUsers(username, userId){
             ON 
                 u.id = ur.id
             WHERE 
-                lower(pc.username) LIKE $2
+                lower(pc.username) ILIKE $2
             ORDER BY
                 ur.status
             DESC
