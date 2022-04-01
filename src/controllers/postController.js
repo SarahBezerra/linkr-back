@@ -82,6 +82,7 @@ export async function getPostsWithInterval(req, res) {
 
       const responseDate = await postRepository.getDatePost(idPost);
       lastDate = responseDate.rows[0].date;
+      console.log(lastDate);
     }
 
     if (lastDate.length === 0) lastDate = date;
@@ -90,7 +91,7 @@ export async function getPostsWithInterval(req, res) {
       lastDate,
       userId
     );
-    const number = requestNumber.rows[0].count;
+    const number = requestNumber.rowCount;
     console.log(lastDate);
     console.log(number);
 
