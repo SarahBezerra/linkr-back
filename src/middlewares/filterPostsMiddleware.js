@@ -16,6 +16,7 @@ export default function filterPostMiddleware(req, res, next){
             OR  po."userId" IN ($${params.length})
         `;
         conditions.push(`${query}
+            OR  re."userId" IN ($${params.length})
             OR 	re."userId" IN (SELECT "followedId" FROM follows WHERE "followerId"=$${params.length})
         `);
         conditionsUnion.push(query);
