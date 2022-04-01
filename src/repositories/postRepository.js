@@ -57,13 +57,11 @@ async function getPosts(
 }
 
 async function getFollowed(userId) {
-  
   return connection.query(
     `SELECT * 
     FROM follows
     WHERE follows."followerId"=${userId}`
   );
-
 }
 
 async function storeHashtags(id, text) {
